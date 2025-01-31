@@ -1,2 +1,7 @@
-"# plm"  git init git add README.md git commit -m "first commit" git branch -M main git remote add origin git@github.com:TimotheePopesco/plm.git git push -u origin main
-"# plm" 
+To launch the project : 
+
+cd "repertoire ou se situe le projet"
+python create_database.py python manage.py makemigrations
+python manage.py migrate
+python manage.py load_data
+python manage.py runserver
