@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="fr">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Statistiques et Finances</title>
+    {% load static %}
+    <link rel="stylesheet" href="{% static 'styles/main.css' %}">
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background: #f4f4f9;
+            color: #333;
+        }
+
+        h1 {
+            text-align: center;
+            padding: 20px;
+            color: navy;
+            background-color: rgba(255, 255, 255, 0.8);
+            border-bottom: 5px solid grey;
+        }
+
+        .stat-table {
+            width: 80%;
+            margin: 20px auto;
+            border-collapse: collapse;
+            background-color: rgba(255, 255, 255, 0.9);
+            border-radius: 10px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+        }
+
+        th, td {
+            padding: 12px;
+            text-align: left;
+            border-bottom: 1px solid #ddd;
+        }
+
+        th {
+            background-color: navy;
+            color: grey;
+        }
+
+        .graph {
+            text-align: center;
+            margin: 30px;
+        }
+
+        .message {
+            text-align: center;
+            color: green;
+            margin: 20px;
+        }
+    </style>
+</head>
+
+<body>
+    <header>
+        <h1>Finances et Statistiques</h1>
+    </header>
+
+    <!-- Chiffre d'affaires par produit -->
+    <div class="graph">
+        <h2>Chiffre d'affaires par produit</h2>
+        <img src="data:image/png;base64,{{ graph_img }}" alt="Chiffre d'affaires par produit" />
+    </div>
+
+    <!-- Affichage des statistiques des produits -->
+    <h2 style="text-align: center;">Détails des Revenus par Produit</h2>
+    <table class="stat-table">
+        <thead>
+            <tr>
+                <th>Nom du Produit</th>
+                <th>Type</th>
+                <th>Chiffre d'Affaires</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for stat in cheese_revenue %}
+            <tr>
+                <td>{{ stat.product_id }}</td>
+                <td>Fromage</td>
+                <td>{{ stat.total_revenue }}</td>
+            </tr>
+            {% endfor %}
+            {% for stat in wine_revenue %}
+            <tr>
+                <td>{{ stat.product_id }}</td>
+                <td>Vin</td>
+                <td>{{ stat.total_revenue }}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+
+    <!-- Affichage des stocks -->
+    <h2 style="text-align: center;">Stocks Disponibles</h2>
+    <table class="stat-table">
+        <thead>
+            <tr>
+                <th>Produit</th>
+                <th>Quantité en Stock</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for stock in stock_data %}
+            <tr>
+                <td>{{ stock.product__product_id }}</td>
+                <td>{{ stock.total_stock }}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+
+    <footer>
+        {% include 'footer.html' %}
+    </footer>
+</body>
+
+</html>

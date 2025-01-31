@@ -1,0 +1,207 @@
+<!DOCTYPE html>
+<html lang="fr">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Produits Fromagers et Vins</title>
+    {% load static %}
+    <link rel="stylesheet" href="{% static 'styles/main.css' %}">
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background: url('{% static "pexels-jill-wellington-1638660-39351.jpg" %}') no-repeat center center fixed;
+            background-size: cover;
+            color: grey;
+        }
+
+        header {
+            background-color: rgba(255, 255, 255, 0.8);
+            padding: 20px;
+            text-align: center;
+            border-bottom: 5px solid navy;
+        }
+
+        h1 {
+            margin: 0;
+            font-size: 2em;
+        }
+
+        section {
+            padding: 2em;
+            margin: 20px;
+            border-radius: 10px;
+        }
+
+        .grid-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+            margin: 0 auto;
+            max-width: 1200px;
+            padding: 20px;
+        }
+
+        .grid-item {
+            background-color: rgba(255, 255, 255, 0.9);
+            border: 1px solid #ccc;
+            border-radius: 10px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            overflow: hidden;
+            text-align: center;
+            padding: 15px;
+        }
+
+        .grid-item img {
+            max-width: 100%;
+            height: auto;
+            border-radius: 8px;
+            margin-bottom: 10px;
+        }
+
+        .grid-item h2 {
+            font-size: 1.6em;
+            font-weight: bold;
+            color: grey;
+            margin-bottom: 10px;
+        }
+
+        .grid-item .price {
+            font-size: 1.4em;
+            font-weight: bold;
+            color: #530171;
+            margin-bottom: 5px;
+        }
+
+        .grid-item .price:hover {
+            color: #530171;
+            transform: scale(1.1);
+            transition: 0.3s ease-in-out;
+        }
+
+        .grid-item .quantity-label {
+            font-size: 1.1em;
+            font-weight: bold;
+            color: grey;
+            margin-bottom: 5px;
+        }
+
+        .grid-item input {
+            width: 60px;
+            padding: 5px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            text-align: center;
+            font-size: 1.1em;
+        }
+
+        button.submit-button {
+            background-color: navy;
+            color: grey;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            font-size: 1em;
+            cursor: pointer;
+            margin-top: 20px;
+            transition: background-color 0.3s, color 0.3s;
+        }
+
+        button.submit-button:hover {
+            background-color: grey;
+            color: navy;
+        }
+
+        .cart-logo {
+            width: 20px;
+            height: auto;
+            margin-right: 8px;
+        }
+    </style>
+</head>
+
+<body>
+    {% include 'navbar.html' %}
+
+    <header>
+        <h1>Produits Fromagers et Vins</h1>
+        <p>Sélectionnez la quantité pour chaque fromage ou vin</p>
+    </header>
+
+    <section>
+        <button class="submit-button" onclick="goToCart()">
+            <img src="{% static 'cart_logo.jpeg' %}" alt="Logo du panier" class="cart-logo">
+            Aller au panier
+        </button>
+
+        <div class="grid-container">
+            {% for product in products %}
+                <div class="product grid-item" id="{{ product.product_id }}">
+                    <img src="{% static product.name|lower|add:'.png' %}" alt="{{ product.name|lower }}">
+
+                    <h2>{{ product.name }}</h2>
+                    <p class="price" id="{{ product.name|lower }}-price">Prix: {{ product.price }}€</p>
+                    <label class="quantity-label" for="{{ product.name|lower }}-quantity">Quantité:</label>
+                    <input type="number" id="{{ product.name|lower }}-quantity" class="quantity" value="0" min="0">
+                </div>
+            {% endfor %}
+        </div>
+    </section>
+
+    <footer>
+        {% include 'footer.html' %}
+    </footer>
+
+    <script id="config" type="application/json">
+        {
+            "staticBaseUrl": "{% static '' %}"
+        }
+    </script>
+
+    <script>
+        var config = JSON.parse(document.getElementById('config').textContent);
+        var staticBaseUrl = config.staticBaseUrl;
+
+        function goToCart() {
+            updateQuantities();
+
+            var cartItems = JSON.parse(localStorage.getItem("cartItems")) || {};
+            var cartItemsArray = Object.values(cartItems);
+            var cartItemsSum = cartItemsArray.reduce((a, b) => a + b.quantity, 0);
+
+            if (cartItemsSum === 0) {
+                alert("Veuillez sélectionner au moins un article");
+                return;
+            }
+
+            window.location.href = "/order/order_infos/";
+        }
+
+        function updateQuantities() {
+            var products = document.querySelectorAll(".product");
+            var cartItems = {};
+
+            products.forEach(function (product) {
+                var product_id = product.id;
+                var name = product.querySelector("h2").textContent.toLowerCase();
+                var quantity = parseInt(document.getElementById(name.toLowerCase() + "-quantity").value) || 0;
+                var price = parseFloat(document.getElementById(name.toLowerCase() + "-price").textContent.split(" ")[1]) || 0;
+
+                if (quantity > 0) {
+                    cartItems[product_id] = {
+                        product_id: product_id,
+                        name: name,
+                        quantity: quantity,
+                        price: price
+                    };
+                }
+            });
+
+            localStorage.setItem("cartItems", JSON.stringify(cartItems));
+        }
+    </script>
+</body>
+
+</html>
